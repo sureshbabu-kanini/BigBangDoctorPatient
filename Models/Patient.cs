@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BigBangDoctorPatient.Models
 {
@@ -12,7 +14,7 @@ namespace BigBangDoctorPatient.Models
         [DataType(DataType.PhoneNumber)]
         public string? Patient_PhNo { get; set; }
         public string? Password { get; set; }
-        public Doctor? Doctor { get; set; }
-        public ICollection<Doctor>? Doctors { get; set; }
+        public Doctor Doctor { get; set; }
+        public ICollection<Appointment>? Appointments { get; set; }
     }
 }
