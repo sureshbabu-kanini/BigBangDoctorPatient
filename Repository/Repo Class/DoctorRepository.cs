@@ -18,7 +18,7 @@ namespace BigBangDoctorPatient.Repository.Repo_Class
 
         public async Task<IEnumerable<Doctor>> GetDoctors()
         {
-            return await _context.Doctors.Include(x=>x.Patients).ToListAsync();
+            return await _context.Doctors.Include(x=>x.Patients).Include(y=>y.Appointments).ToListAsync();
         }
 
         public async Task<Doctor> GetDoctor(int id)
@@ -34,9 +34,20 @@ namespace BigBangDoctorPatient.Repository.Repo_Class
 
         public async Task UpdateDoctor(Doctor doctor)
         {
-            _context.Entry(doctor).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            var existingDoctor = await _context.Doctors.FindAsync(doctor.Doctor_Id);
+            if (existingDoctor != null)
+            {
+                // Retain the existing image data and status
+                doctor.ImageData = existingDoctor.ImageData;
+                doctor.Status = existingDoctor.Status;
+
+                _context.Entry(existingDoctor).CurrentValues.SetValues(doctor);
+                await _context.SaveChangesAsync();
+            }
         }
+
+
+
 
         public async Task DeleteDoctor(int id)
         {

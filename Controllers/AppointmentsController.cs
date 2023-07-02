@@ -29,7 +29,7 @@ namespace BigBangDoctorPatient.Controllers
           {
               return NotFound();
             }
-            return await _context.Appointments.Include(x => x.Doctor).ToListAsync();
+            return await _context.Appointments.Include(x => x.Doctor).Include(y=>y.Patient).ToListAsync();
 
         }
 

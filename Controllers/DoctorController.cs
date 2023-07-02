@@ -43,7 +43,7 @@ namespace BigBangDoctorPatient.Controllers
         }
 
         // POST: api/Doctor
-        [AllowAnonymous]
+        //[Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> CreateDoctorRequest([FromForm] Doctor doctor, IFormFile imageFile)
         {
@@ -71,9 +71,9 @@ namespace BigBangDoctorPatient.Controllers
         }
 
         // PUT: api/Doctor/5
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateDoctor(int id, [FromForm] Doctor doctor, IFormFile imageFile)
+        public async Task<IActionResult> UpdateDoctor(int id, [FromForm] Doctor doctor)
         {
             if (id != doctor.Doctor_Id)
             {
@@ -88,15 +88,8 @@ namespace BigBangDoctorPatient.Controllers
                     return NotFound();
                 }
 
-                if (imageFile != null && imageFile.Length > 0)
-                {
-                    var imageData = await ConvertImageToByteArray(imageFile);
-                    doctor.ImageData = imageData;
-                }
-                else
-                {
-                    doctor.ImageData = existingDoctor.ImageData; // Retain the existing image data
-                }
+                // Retain the existing image data
+                doctor.ImageData = existingDoctor.ImageData;
 
                 await _doctorRepository.UpdateDoctor(doctor);
             }
@@ -107,6 +100,7 @@ namespace BigBangDoctorPatient.Controllers
 
             return NoContent();
         }
+
 
         private async Task<byte[]> ConvertImageToByteArray(IFormFile imageFile)
         {
@@ -123,6 +117,7 @@ namespace BigBangDoctorPatient.Controllers
         }
 
         // DELETE: api/Doctor/5
+        //[Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDoctor(int id)
         {
@@ -135,6 +130,16 @@ namespace BigBangDoctorPatient.Controllers
 
             return NoContent();
         }
+
+        // GET: api/Doctor/BySpecialization?specialization=xxx
+        [HttpGet("BySpecialization")]
+        public async Task<ActionResult<IEnumerable<Doctor>>> GetDoctorsBySpecialization(string specialization)
+        {
+            var doctors = await _doctorRepository.GetDoctors();
+            var filteredDoctors = doctors.Where(d => d.Specialization != null && d.Specialization.Equals(specialization, StringComparison.OrdinalIgnoreCase));
+            return Ok(filteredDoctors);
+        }
+
 
         // GET: api/Doctor/ApprovedDoctors
         [HttpGet("ApprovedDoctors")]
