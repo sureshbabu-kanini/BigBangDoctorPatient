@@ -16,7 +16,7 @@ namespace BigBangDoctorPatient.Controllers
     {
         public IConfiguration? _configuration;
         private readonly DoctorPatientContext _context;
-        private const string UserRole = "Doctor";
+        private const string DoctorRole = "Doctor";
         private const string AdminRole = "Admin";
         private const string UsersRole = "Patient";
 
@@ -43,7 +43,7 @@ namespace BigBangDoctorPatient.Controllers
                         new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
                          new Claim("Doctor_Name", users.Doctor_Name),
                         new Claim("Password",users.Password),
-                        new Claim(ClaimTypes.Role, UserRole)
+                        new Claim(ClaimTypes.Role, DoctorRole)
 
                     };
 

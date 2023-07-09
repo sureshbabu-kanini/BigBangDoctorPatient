@@ -1,7 +1,11 @@
 ﻿using BigBangDoctorPatient.Models;
 using BigBangDoctorPatient.Repository.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Data;
+using System.Threading.Tasks;
 
 namespace BigBangDoctorPatient.Controllers
 {
@@ -39,6 +43,8 @@ namespace BigBangDoctorPatient.Controllers
         }
 
         // POST: api/Patient
+
+        
         [HttpPost]
         public async Task<IActionResult> CreatePatient([FromBody] Patient patient)
         {
@@ -48,6 +54,8 @@ namespace BigBangDoctorPatient.Controllers
         }
 
         // PUT: api/Patient/5
+
+        [Authorize(Roles = "Admin,Patient")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdatePatient(int id, [FromBody] Patient patient)
         {
@@ -75,12 +83,28 @@ namespace BigBangDoctorPatient.Controllers
             return NoContent();
         }
 
+        // GET: api/Patient/search
         [HttpGet("search")]
         public async Task<ActionResult<IEnumerable<Patient>>> SearchPatients(string query)
         {
             var patients = await _patientRepository.SearchPatients(query);
 
-            if (patients == null || patients.Count() == 0)
+            if (patients == null || !patients.Any())
+            {
+                return NotFound();
+            }
+
+
+            return Ok(patients);
+        }
+
+        // GET: api/Patient/searchByName
+        [HttpGet("searchByName")]
+        public async Task<ActionResult<IEnumerable<Patient>>> SearchPatientsByName(string name)
+        {
+            var patients = await _patientRepository.SearchPatientsByName(name);
+
+            if (patients == null || patients.Count == 0)
             {
                 return NotFound();
             }
@@ -89,6 +113,7 @@ namespace BigBangDoctorPatient.Controllers
         }
 
         // DELETE: api/Patient/5
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePatient(int id)
         {

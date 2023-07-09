@@ -43,7 +43,7 @@ namespace BigBangDoctorPatient.Controllers
         }
 
         // POST: api/Doctor
-        //[Authorize(Roles = "Admin")]
+
         [HttpPost]
         public async Task<IActionResult> CreateDoctorRequest([FromForm] Doctor doctor, IFormFile imageFile)
         {
@@ -71,7 +71,7 @@ namespace BigBangDoctorPatient.Controllers
         }
 
         // PUT: api/Doctor/5
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Doctor")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateDoctor(int id, [FromForm] Doctor doctor)
         {
@@ -117,7 +117,7 @@ namespace BigBangDoctorPatient.Controllers
         }
 
         // DELETE: api/Doctor/5
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Doctor")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDoctor(int id)
         {
@@ -149,6 +149,16 @@ namespace BigBangDoctorPatient.Controllers
             var filteredDoctors = approvedDoctors.Where(d => d.Status == "Approved");
             return Ok(filteredDoctors);
         }
+
+        // GET: api/Doctor/ByDoctorName?doctorName=xxx
+        [HttpGet("ByDoctorName")]
+        public async Task<ActionResult<IEnumerable<Doctor>>> GetDoctorByDoctorName(string doctorName)
+        {
+            var doctors = await _doctorRepository.GetDoctors();
+            var filteredDoctors = doctors.Where(d => d.Doctor_Name != null && d.Doctor_Name.Equals(doctorName, StringComparison.OrdinalIgnoreCase));
+            return Ok(filteredDoctors);
+        }
+
 
     }
 }

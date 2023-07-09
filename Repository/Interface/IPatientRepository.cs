@@ -13,5 +13,6 @@ namespace BigBangDoctorPatient.Repository.Interface
         Task DeletePatient(Patient patient);
         Task<bool> PatientExists(int id);
         Task<IEnumerable<Patient>> SearchPatients(string query);
+        Task<List<Patient>> SearchPatientsByName(string name);
     }
 }

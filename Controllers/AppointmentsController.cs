@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BigBangDoctorPatient.Context;
 using BigBangDoctorPatient.Models;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace BigBangDoctorPatient.Controllers
 {
@@ -53,6 +55,7 @@ namespace BigBangDoctorPatient.Controllers
 
         // PUT: api/Appointments/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(Roles = "Admin,Doctor")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutAppointment(int id, Appointment appointment)
         {
@@ -84,15 +87,23 @@ namespace BigBangDoctorPatient.Controllers
 
         // POST: api/Appointments
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // POST: api/Appointments
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(Roles = "Admin,Doctor")]
         [HttpPost]
         public async Task<ActionResult<Appointment>> PostAppointment(Appointment appointment)
         {
-          if (_context.Appointments == null)
-          {
-              return Problem("Entity set 'DoctorPatientContext.Appointments'  is null.");
-          }
-            var r = _context.Patients.Find(appointment.Patient.Patient_Id);
-            appointment.Patient= r;
+            if (_context.Appointments == null)
+            {
+                return Problem("Entity set 'DoctorPatientContext.Appointments' is null.");
+            }
+
+            var patient = await _context.Patients.FindAsync(appointment.Patient?.Patient_Id);
+            if (patient == null)
+            {
+                return NotFound("Patient not found.");
+            }
+            appointment.Patient = patient;
 
             _context.Appointments.Add(appointment);
             await _context.SaveChangesAsync();
@@ -100,7 +111,9 @@ namespace BigBangDoctorPatient.Controllers
             return CreatedAtAction("GetAppointment", new { id = appointment.Appointment_Id }, appointment);
         }
 
+
         // DELETE: api/Appointments/5
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAppointment(int id)
         {

@@ -58,5 +58,14 @@ namespace BigBangDoctorPatient.Repository.Repo_Class
         {
             return await _context.Patients.AnyAsync(e => e.Patient_Id == id);
         }
+
+        public async Task<List<Patient>> SearchPatientsByName(string name)
+        {
+            var patients = await _context.Patients.ToListAsync();
+            return patients
+                .Where(p => p.Patient_Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+
     }
 }
