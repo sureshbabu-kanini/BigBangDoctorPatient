@@ -75,6 +75,19 @@ namespace BigBangDoctorPatient.Controllers
             return NoContent();
         }
 
+        [HttpGet("search")]
+        public async Task<ActionResult<IEnumerable<Patient>>> SearchPatients(string query)
+        {
+            var patients = await _patientRepository.SearchPatients(query);
+
+            if (patients == null || patients.Count() == 0)
+            {
+                return NotFound();
+            }
+
+            return Ok(patients);
+        }
+
         // DELETE: api/Patient/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePatient(int id)

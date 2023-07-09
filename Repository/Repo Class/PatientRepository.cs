@@ -47,6 +47,13 @@ namespace BigBangDoctorPatient.Repository.Repo_Class
             await _context.SaveChangesAsync();
         }
 
+        public async Task<IEnumerable<Patient>> SearchPatients(string query)
+        {
+            return await _context.Set<Patient>()
+                .Where(p => p.Patient_Name.Contains(query) || p.Disease.Contains(query))
+                .ToListAsync();
+        }
+
         public async Task<bool> PatientExists(int id)
         {
             return await _context.Patients.AnyAsync(e => e.Patient_Id == id);

@@ -14,7 +14,7 @@ namespace BigBangDoctorPatient.Models
         [DataType(DataType.PhoneNumber)]
         public string? Patient_PhNo { get; set; }
         public string? Password { get; set; }
-        public Doctor Doctor { get; set; }
+        public Doctor? Doctor { get; set; }
         public ICollection<Appointment>? Appointments { get; set; }
     }
 }
